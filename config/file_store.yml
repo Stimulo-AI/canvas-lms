@@ -1,0 +1,9 @@
+# config/file_store.yml
+production:
+  provider: S3
+  bucket_name: <%= ENV.fetch("S3_BUCKET") %>
+  access_key_id: <%= ENV.fetch("S3_ACCESS_KEY_ID") %>
+  secret_access_key: <%= ENV.fetch("S3_SECRET_ACCESS_KEY") %>
+  s3_region: <%= ENV.fetch("S3_REGION") %>
+  s3_protocol: <%= ENV.fetch("S3_PROTOCOL", "https") %>
+  s3_host_name: <%= ENV.fetch("S3_ENDPOINT") %>   # OCI S3-compat endpoint

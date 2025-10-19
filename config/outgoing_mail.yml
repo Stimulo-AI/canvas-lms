@@ -1,0 +1,12 @@
+production: &production
+  address: <%= ENV.fetch("SMTP_ADDRESS") %>
+  port: <%= ENV.fetch("SMTP_PORT") %>
+  domain: <%= ENV.fetch("SMTP_DOMAIN") %>
+  user_name: <%= ENV["SMTP_USER"] %>
+  password: <%= ENV["SMTP_PASS"] %>
+  authentication: <%= ENV["SMTP_AUTH"] || "plain" %>
+  enable_starttls_auto: <%= ENV["SMTP_ENABLE_STARTTLS_AUTO"] || true %>
+  outgoing_address: <%= ENV["CANVAS_OUTGOING_ADDRESS"] || "no-reply@#{ENV.fetch("SMTP_DOMAIN")}" %>
+
+development:
+  <<: *production

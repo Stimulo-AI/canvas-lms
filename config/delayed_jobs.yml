@@ -1,0 +1,8 @@
+default:
+  workers:
+  - queue: canvas_queue
+
+production:
+  workers:
+    generic: 2
+    long_running: 1

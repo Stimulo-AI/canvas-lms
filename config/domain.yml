@@ -1,0 +1,9 @@
+production:
+  domain: <%= ENV.fetch("CANVAS_DOMAIN") %>
+  files_domain: <%= ENV["CANVAS_FILES_DOMAIN"] %>  # required for secure uploads and custom JS
+
+test:
+  domain: localhost
+
+development:
+  domain: "canvas.docker"
