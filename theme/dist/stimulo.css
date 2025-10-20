@@ -1,0 +1,5 @@
+:root{}
+.Button,.btn{background-color:var(--color-brand-500)!important;border-color:var(--color-brand-600)!important}
+.Button:hover,.btn:hover{background-color:var(--color-brand-600)!important}
+a,.ic-Action--link{color:var(--color-brand-600)!important}
+.ic-app-header__logomark svg [fill]{fill:var(--color-brand-500)!important}
