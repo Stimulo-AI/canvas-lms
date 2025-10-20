@@ -1,0 +1,133 @@
+# docker-compose.oci-local.yml
+x-env: &app_env
+  RAILS_ENV: production
+  NODE_ENV: production
+  # Database config (for both DATABASE_URL and legacy config vars)
+  DATABASE_URL: postgres://canvas:secret@db:5432/canvas_production
+  PGHOST: db
+  PGPORT: "5432"
+  PGDATABASE: canvas_production
+  PGUSER: canvas
+  PGPASSWORD: secret
+  # Redis
+  REDIS_URL: redis://:secret@redis:6379/5
+  # Canvas file storage: point at local MinIO (S3-compatible)
+  # For file_store.yml
+  S3_REGION: us-east-1
+  S3_ACCESS_KEY_ID: localaccess
+  S3_SECRET_ACCESS_KEY: localsecret
+  S3_PROTOCOL: http
+  S3_ENDPOINT: http://minio:9000
+  S3_BUCKET: canvas-files
+  # Legacy AWS_* vars (for amazon_s3.yml compatibility)
+  AWS_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: localaccess
+  AWS_SECRET_ACCESS_KEY: localsecret
+  # Canvas domain configuration
+  CANVAS_DOMAIN: localhost:3000
+  CANVAS_FILES_DOMAIN: localhost:3000
+  # Security
+  ENCRYPTION_KEY: 81efaa1f07b0022285507a16ab6fed751e209b5f3151bd5c88f142ab805e23f0769d9b14b591a5efc8705b205733447e2686584fc2527ca504c018cc8a16c5a3
+  FORCE_SSL: "false"
+  # Admin account bootstrap
+  CANVAS_LMS_ADMIN_EMAIL: admin@localhost
+  CANVAS_LMS_ADMIN_PASSWORD: AdminCanvas2025!
+  CANVAS_LMS_ACCOUNT_NAME: Canvas LMS Local
+  # mail (for notifications); use MailHog locally
+  SMTP_ADDRESS: mailhog
+  SMTP_PORT: "1025"
+  SMTP_DOMAIN: localhost
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: canvas
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: canvas_production
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U canvas -d canvas_production"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "--requirepass", "secret"]
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "secret", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: localaccess
+      MINIO_ROOT_PASSWORD: localsecret
+    ports: ["9000:9000", "9001:9001"]
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  minio-mc-init:
+    image: minio/mc:latest
+    depends_on: [minio]
+    entrypoint: ["/bin/sh","-c"]
+    command: >
+      "mc alias set local http://minio:9000 localaccess localsecret &&
+       mc mb -p local/$${S3_BUCKET} || true"
+    environment:
+      S3_BUCKET: canvas-files
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    depends_on: [db, redis, minio, minio-mc-init]
+    environment:
+      <<: *app_env
+    # nginx inside container listens on port 80
+    ports: ["3000:80"]
+    volumes:
+      - ./config/file_store.yml:/usr/src/app/config/file_store.yml
+      - ./config/amazon_s3.yml:/usr/src/app/config/amazon_s3.yml
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:80/login || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+  jobs:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    depends_on: [db, redis]
+    environment:
+      <<: *app_env
+    command: ["bash","-lc","bundle exec script/delayed_job run"]
+    volumes:
+      - ./config/file_store.yml:/usr/src/app/config/file_store.yml
+      - ./config/amazon_s3.yml:/usr/src/app/config/amazon_s3.yml
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep -v grep | grep delayed_job || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 20
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports: ["8025:8025", "1025:1025"]
+
+volumes:
+  pgdata:
+  miniodata:
