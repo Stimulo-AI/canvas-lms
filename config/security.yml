@@ -1,0 +1,12 @@
+production: &default
+  encryption_key: "PXmdyhHGV1nsAhzvGuZXTAV9kBfzMiLWet/wzuQPzqXSI7tAfUe4bxYUW2h/Zrjy3qctdXw9U/C67czAW1CZlw=="
+  dynamic_settings_secret: "tDPr9luCPv+9u7Ht+VwKjBQh/KapelNdD/cRfFxQT6qTcr4gdWOSHZ/dHqXA9SUCN5UMr7bzXtnmz/RbLJeBxA=="
+  jwt_encryption_keys:
+    - 68ddd5576efad4bc90eed3ab0543a1112b0f51ec9425573a80a96cbc4a9e12b6
+  lti_iss: 'https://canvas.instructure.com'
+
+development:
+  <<: *default
+
+test:
+  <<: *default

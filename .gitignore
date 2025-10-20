@@ -109,3 +109,17 @@ coverage-karma
 # Allows devs to create their own devcontainer files
 /.devcontainer/*
 /!.devcontainer/.keep
+
+# Local production development files
+.env.production.local
+.env.development.local
+docker-compose.local.*
+
+# Local development utilities
+create_admin_simple.rb
+fix_domain.rb
+setup_admin.rb
+setup_admin.sql
+
+# Testing artifacts
+.playwright-mcp/
