@@ -16,3 +16,4 @@ production:
   secret_access_key: <%= ENV.fetch("S3_SECRET_ACCESS_KEY") %>
   region: <%= ENV.fetch("S3_REGION") %>
   endpoint: <%= ENV.fetch("S3_ENDPOINT") %>
+  force_path_style: <%= ENV.fetch("S3_FORCE_PATH_STYLE", "true") %>

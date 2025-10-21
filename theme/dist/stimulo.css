@@ -1,4 +1,4 @@
-:root{}
+:root{--color-brand-50:#f3ecf6;--color-brand-100:#e8d9ee;--color-brand-150:#ddc6e6;--color-brand-200:#d1b4de;--color-brand-250:#c6a1d6;--color-brand-300:#bb8ecd;--color-brand-350:#af7cc5;--color-brand-400:#a469bd;--color-brand-450:#9956b5;--color-brand-500:#8e44ad;--color-brand-550:#7e3c99;--color-brand-600:#6e3486;--color-brand-650:#5e2d73;--color-brand-700:#4e2560;--color-brand-750:#3f1e4c;--color-brand-800:#2f1639;--color-brand-850:#1f0f26;--color-brand-900:#0f0713;--color-brand-950:#000000;}
 .Button,.btn{background-color:var(--color-brand-500)!important;border-color:var(--color-brand-600)!important}
 .Button:hover,.btn:hover{background-color:var(--color-brand-600)!important}
 a,.ic-Action--link{color:var(--color-brand-600)!important}

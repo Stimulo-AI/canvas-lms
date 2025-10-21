@@ -19,6 +19,7 @@ x-env: &app_env
   S3_PROTOCOL: http
   S3_ENDPOINT: http://minio:9000
   S3_BUCKET: canvas-files
+  S3_FORCE_PATH_STYLE: "true"
   # Legacy AWS_* vars (for amazon_s3.yml compatibility)
   AWS_REGION: us-east-1
   AWS_ACCESS_KEY_ID: localaccess
@@ -101,6 +102,7 @@ services:
     volumes:
       - ./config/file_store.yml:/usr/src/app/config/file_store.yml
       - ./config/amazon_s3.yml:/usr/src/app/config/amazon_s3.yml
+      - ./config/environments/production-local.rb:/usr/src/app/config/environments/production-local.rb
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:80/login || exit 1"]
       interval: 15s

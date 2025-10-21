@@ -123,3 +123,4 @@ setup_admin.sql
 
 # Testing artifacts
 .playwright-mcp/
+.canvas-token.local
